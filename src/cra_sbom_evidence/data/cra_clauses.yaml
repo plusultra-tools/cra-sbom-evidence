@@ -1,0 +1,239 @@
+# CRA clause registry — Regulation (EU) 2024/2847 (Cyber Resilience Act).
+#
+# VERBATIM source: Regulation (EU) 2024/2847 as published in the Official
+# Journal of the European Union (OJ L, 2024-11-20).
+#
+# Retrieved 2026-05-14. Each `text` field MUST match the OJEU consolidated
+# text byte-for-byte. The `sha256` field is the lowercase hex digest of
+# `text.encode("utf-8")`. The integrity test in tests/test_manifest.py
+# recomputes the digest and refuses to ship if any clause has drifted.
+#
+# If you edit `text`, you MUST recompute `sha256` (see scripts in repo).
+
+source_canonical_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+source_secondary_url: "https://www.cyber-resilience-act.com/"
+retrieved_at: "2026-05-14T00:00:00Z"
+regulation_id: "Regulation (EU) 2024/2847"
+short_title: "Cyber Resilience Act"
+date_of_entry_into_force: "2024-12-10"
+date_article_14_applies: "2026-09-11"
+date_full_application: "2027-12-11"
+
+clauses:
+
+  art_13_1:
+    title: "Article 13(1) — Essential cybersecurity requirements at placing on the market"
+    text: "When placing a product with digital elements on the market, manufacturers shall ensure that it has been designed, developed and produced in accordance with the essential cybersecurity requirements set out in Part I of Annex I."
+    evidence_fields:
+      - sbom.metadata.component.name
+      - sbom.metadata.timestamp
+      - compliance_manifest.annex_i_part_i.conformity_status
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_13_2:
+    title: "Article 13(2) — Cybersecurity risk assessment"
+    text: "For the purpose of complying with paragraph 1, manufacturers shall undertake an assessment of the cybersecurity risks associated with a product with digital elements and take the outcome of that assessment into account during the planning, design, development, production, delivery and maintenance phases of the product with digital elements with a view to minimising cybersecurity risks, preventing incidents and minimising their impact, including in relation to the health and safety of users."
+    evidence_fields:
+      - risk_assessment.id
+      - risk_assessment.updated_at
+      - risk_assessment.support_period_end
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_13_5:
+    title: "Article 13(5) — Third-party and FOSS component due diligence"
+    text: "For the purpose of complying with paragraph 1, manufacturers shall exercise due diligence when integrating components sourced from third parties so that those components do not compromise the cybersecurity of the product with digital elements, including when integrating components of free and open-source software that have not been made available on the market in the course of a commercial activity."
+    evidence_fields:
+      - sbom.components[].supplier
+      - sbom.components[].source
+      - sbom.components[].licenses
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_13_6:
+    title: "Article 13(6) — Upstream component vulnerability reporting"
+    text: "Manufacturers shall, upon identifying a vulnerability in a component, including in an open source-component, which is integrated in the product with digital elements report the vulnerability to the person or entity manufacturing or maintaining the component, and address and remediate the vulnerability in accordance with the vulnerability handling requirements set out in Part II of Annex I."
+    evidence_fields:
+      - vex.statements[].vulnerability.id
+      - vex.statements[].products
+      - vex.statements[].status
+      - vex.statements[].upstream_notified_at
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_13_8:
+    title: "Article 13(8) — Vulnerability handling for the support period"
+    text: "Manufacturers shall ensure, when placing a product with digital elements on the market, and for the support period, that vulnerabilities of that product, including its components, are handled effectively and in accordance with the essential cybersecurity requirements set out in Part II of Annex I."
+    evidence_fields:
+      - compliance_manifest.support_period_start
+      - compliance_manifest.support_period_end
+      - compliance_manifest.cvd_policy_url
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_13_9:
+    title: "Article 13(9) — 10-year retention of security updates"
+    text: "Manufacturers shall ensure that each security update, as referred to in Part II, point (8), of Annex I, which has been made available to users during the support period, remains available after it has been issued for a minimum of 10 years or for the remainder of the support period, whichever is longer."
+    evidence_fields:
+      - update_archive.retention_until
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_13_13:
+    title: "Article 13(13) — 10-year retention of technical documentation"
+    text: "Manufacturers shall keep the technical documentation and the EU declaration of conformity at the disposal of the market surveillance authorities for at least 10 years after the product with digital elements has been placed on the market or for the support period, whichever is longer."
+    evidence_fields:
+      - technical_documentation.retention_until
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_13_17:
+    title: "Article 13(17) — Single point of contact"
+    text: "For the purposes of this Regulation, manufacturers shall designate a single point of contact to enable users to communicate directly and rapidly with them, including in order to facilitate reporting on vulnerabilities of the product with digital elements."
+    evidence_fields:
+      - compliance_manifest.spoc.url
+      - compliance_manifest.spoc.email
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_13_24:
+    title: "Article 13(24) — SBOM format implementing acts"
+    text: "The Commission may, by means of implementing acts taking into account European or international standards and best practices, specify the format and elements of the software bill of materials referred to in Part II, point (1), of Annex I."
+    evidence_fields:
+      - sbom.bomFormat
+      - sbom.specVersion
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_14_1:
+    title: "Article 14(1) — Notification of actively exploited vulnerabilities (24h early warning)"
+    text: "A manufacturer shall notify any actively exploited vulnerability contained in the product with digital elements that it becomes aware of simultaneously to the CSIRT designated as coordinator, in accordance with paragraph 7 of this Article, and to ENISA."
+    evidence_fields:
+      - incident.discovered_at
+      - incident.early_warning_submitted_at
+      - incident.csirt_endpoint
+      - incident.enisa_endpoint
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_14_2:
+    title: "Article 14(2) — Notification timeline (24h / 72h / 14 days)"
+    text: "Manufacturers must submit: (a) early warning notification within 24 hours; (b) vulnerability notification within 72 hours with general information about the product, exploit nature, and corrective measures; (c) final report within 14 days including vulnerability description, severity, malicious actor information, and security update details."
+    evidence_fields:
+      - incident.notification_submitted_at
+      - incident.product.id
+      - incident.exploit.description
+      - incident.corrective_measures
+      - incident.final_report_submitted_at
+      - incident.severity_cvss
+      - incident.malicious_actors
+      - incident.security_update.id
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_14_3:
+    title: "Article 14(3) — Notification of severe incidents"
+    text: "A manufacturer shall notify any severe incident having an impact on the security of the product with digital elements that it becomes aware of simultaneously to the CSIRT designated as coordinator, in accordance with paragraph 7 of this Article, and to ENISA."
+    evidence_fields:
+      - incident.threat_analysis.id
+      - incident.mitigation_measures
+      - incident.severity_classification
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_15_1:
+    title: "Article 15(1) — Voluntary vulnerability reporting"
+    text: "Manufacturers as well as other natural or legal persons may notify any vulnerability contained in a product with digital elements as well as cyber threats that could affect the risk profile of a product with digital elements on a voluntary basis to a CSIRT designated as coordinator or ENISA."
+    evidence_fields:
+      - voluntary_report.kind
+      - voluntary_report.submitted_at
+      - voluntary_report.confidentiality_level
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_31_1:
+    title: "Article 31(1) — Technical documentation content"
+    text: "The technical documentation shall contain all relevant data or details of the means used by the manufacturer to ensure that the product with digital elements and the processes put in place by the manufacturer comply with the essential cybersecurity requirements set out in Annex I. It shall at least contain the elements set out in Annex VII."
+    evidence_fields:
+      - technical_documentation.path
+      - technical_documentation.annex_vii_coverage
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_32_1:
+    title: "Article 32(1) — Conformity assessment procedures"
+    text: "The manufacturer shall perform a conformity assessment of the product with digital elements and the processes put in place by the manufacturer to determine whether the essential cybersecurity requirements set out in Annex I are met."
+    evidence_fields:
+      - conformity_assessment.procedure
+      - conformity_assessment.module
+      - conformity_assessment.notified_body_id
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_64_2:
+    title: "Article 64(2) — Tier 1 administrative fines (€15M / 2.5%)"
+    text: "Non-compliance with the essential cybersecurity requirements set out in Annex I and the obligations set out in Articles 13 and 14 shall be subject to administrative fines of up to EUR 15 000 000 or, if the offender is an undertaking, up to 2,5 % of the its total worldwide annual turnover for the preceding financial year, whichever is higher."
+    evidence_fields:
+      - compliance_manifest.annex_i_conformity
+      - compliance_manifest.art_13_obligations_met
+      - compliance_manifest.art_14_obligations_met
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_64_3:
+    title: "Article 64(3) — Tier 2 administrative fines (€10M / 2%)"
+    text: "Non-compliance with the obligations set out in Articles 18 to 23, Article 28, Article 30(1) to (4)... shall be subject to administrative fines of up to EUR 10 000 000 or, if the offender is an undertaking, up to 2 % of its total worldwide annual turnover for the preceding financial year, whichever is higher."
+    evidence_fields:
+      - compliance_manifest.distributor_obligations_met
+      - compliance_manifest.importer_obligations_met
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_64_4:
+    title: "Article 64(4) — Tier 3 administrative fines (€5M / 1%)"
+    text: "The supply of incorrect, incomplete or misleading information to notified bodies and market surveillance authorities in reply to a request shall be subject to administrative fines of up to EUR 5 000 000 or, if the offender is an undertaking, up to 1 % of its total worldwide annual turnover for the preceding financial year, whichever is higher."
+    evidence_fields:
+      - compliance_manifest.information_completeness
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_71_1:
+    title: "Article 71(1) — Entry into force"
+    text: "This Regulation shall enter into force on the twentieth day following that of its publication in the Official Journal of the European Union."
+    evidence_fields: []
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  art_71_2:
+    title: "Article 71(2) — Date of application (full + Art. 14 staging)"
+    text: "This Regulation shall apply from 11 December 2027. However, Article 14 shall apply from 11 September 2026 and Chapter IV (Articles 35 to 51) shall apply from 11 June 2026."
+    evidence_fields:
+      - compliance_manifest.applicable_from
+      - compliance_manifest.art_14_applies_from
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  annex_i_part_i:
+    title: "Annex I Part I — Essential cybersecurity requirements (12 items)"
+    text: |-
+      Products with digital elements shall be designed, developed and produced in such a way that they ensure an appropriate level of cybersecurity based on the risks. Based on the cybersecurity risk assessment, products with digital elements shall, where applicable: (1) be made available on the market without known exploitable vulnerabilities; (2) be made available on the market with a secure by default configuration; (3) ensure that vulnerabilities can be addressed through security updates, including, where applicable, through automatic security updates that are installed within an appropriate timeframe enabled as a default setting, with a clear and easy-to-use opt-out mechanism, through the notification of available updates to users, and the option to temporarily postpone them; (4) ensure protection from unauthorised access by appropriate control mechanisms, including but not limited to authentication, identity or access management systems, and report on possible unauthorised access; (5) protect the confidentiality of stored, transmitted or otherwise processed data, personal or other, such as by encrypting relevant data at rest or in transit by state of the art mechanisms, and by using other technical means; (6) protect the integrity of stored, transmitted or otherwise processed data, personal or other, commands, programs and configuration against any manipulation or modification not authorised by the user, and report on corruptions; (7) process only data, personal or other, that are adequate, relevant and limited to what is necessary in relation to the intended purpose of the product with digital elements (data minimisation); (8) protect the availability of essential and basic functions, also after an incident, including through resilience and mitigation measures against denial-of-service attacks; (9) minimise the negative impact by the products themselves or connected devices on the availability of services provided by other devices or networks; (10) be designed, developed and produced to limit attack surfaces, including external interfaces; (11) be designed, developed and produced to reduce the impact of an incident using appropriate exploitation mitigation mechanisms and techniques; (12) provide security related information by recording and monitoring relevant internal activity, including the access to or modification of data, services or functions, with an opt-out mechanism for the user.
+    evidence_fields:
+      - compliance_manifest.annex_i_part_i.checklist
+      - sbom.vulnerabilities
+      - product.default_configuration
+      - product.update_mechanism
+      - product.access_control
+      - product.encryption_at_rest
+      - product.encryption_in_transit
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  annex_i_part_ii:
+    title: "Annex I Part II — Vulnerability handling requirements (8 items)"
+    text: |-
+      Manufacturers of the products with digital elements shall: (1) identify and document vulnerabilities and components contained in products with digital elements, including by drawing up a software bill of materials in a commonly used and machine-readable format covering at the very least the top-level dependencies of the products; (2) in relation to the risks posed to products with digital elements, address and remediate vulnerabilities without delay, including by providing security updates; where technically feasible, new security updates shall be provided separately from functionality updates; (3) apply effective and regular tests and reviews of the security of the product with digital elements; (4) once a security update has been made available, share and publicly disclose information about fixed vulnerabilities, including a description of the vulnerabilities, information allowing users to identify the product with digital elements affected, the impacts of the vulnerabilities, their severity and clear and accessible information helping users to remediate the vulnerabilities; in duly justified cases, where manufacturers consider the security risks of publication to outweigh the security benefits, they may delay making public information regarding a fixed vulnerability until after users have been given the possibility to apply the relevant patch; (5) put in place and enforce a policy on coordinated vulnerability disclosure; (6) take measures to facilitate the sharing of information about potential vulnerabilities in their product with digital elements as well as in third-party components contained in that product, including by providing a contact address for the reporting of the vulnerabilities discovered in the product with digital elements; (7) provide for mechanisms to securely distribute updates for products with digital elements to ensure that vulnerabilities are fixed or mitigated in a timely manner and, where applicable for security updates, in an automatic manner; (8) ensure that, where security updates are available to address identified security issues, they are disseminated without delay and, unless otherwise agreed between a manufacturer and a business user in relation to a tailor-made product with digital elements, free of charge, accompanied by advisory messages providing users with the relevant information, including on potential action to be taken.
+    evidence_fields:
+      - sbom.components
+      - sbom.bomFormat
+      - vex.statements
+      - cvd_policy.url
+      - psirt.contact_email
+      - update.signing_key
+      - update.distribution_channel
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  annex_iii_class_i:
+    title: "Annex III Class I — Important products (19 categories)"
+    text: |-
+      Class I categories: (1) identity management systems and privileged access management software and hardware, including authentication and access control readers, including biometric readers; (2) standalone and embedded browsers; (3) password managers; (4) software that searches for, removes, or quarantines malicious software; (5) products with digital elements with the function of virtual private network (VPN); (6) network management systems; (7) security information and event management (SIEM) systems; (8) boot managers; (9) public key infrastructure and digital certificate issuance software; (10) physical and virtual network interfaces; (11) operating systems; (12) routers, modems intended for the connection to the internet, and switches; (13) microprocessors with security-related functionalities; (14) microcontrollers with security-related functionalities; (15) application specific integrated circuits (ASIC) and field-programmable gate arrays (FPGA) with security-related functionalities; (16) smart home general purpose virtual assistants; (17) smart home products with security functionalities, including smart door locks, security cameras, baby monitoring systems and alarm systems; (18) internet connected toys with social interactive features or location tracking features; (19) personal wearable products with health monitoring purpose.
+    evidence_fields:
+      - product.annex_iii_classification
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
+
+  annex_iii_class_ii:
+    title: "Annex III Class II — Important products (4 categories)"
+    text: |-
+      Class II categories: (1) hypervisors and container runtime systems that support virtualised execution of operating systems and similar environments; (2) firewalls, intrusion detection and prevention systems; (3) tamper-resistant microprocessors; (4) tamper-resistant microcontrollers.
+    evidence_fields:
+      - product.annex_iii_classification
+    source_url: "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"

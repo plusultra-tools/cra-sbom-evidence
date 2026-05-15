@@ -1,0 +1,63 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:1a2b3c4d-0000-0000-0000-000000000001",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-06-18T09:00:00Z",
+    "tools": [
+      {"vendor": "plusUltra", "name": "cra-sbom-evidence", "version": "0.1.0"}
+    ],
+    "component": {
+      "type": "application",
+      "name": "my-product",
+      "version": "1.2.3",
+      "bom-ref": "root"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "openssl",
+      "version": "3.2.1",
+      "purl": "pkg:generic/openssl@3.2.1",
+      "bom-ref": "openssl@3.2.1",
+      "supplier": {"name": "OpenSSL Project"},
+      "licenses": [{"license": {"id": "Apache-2.0"}}]
+    },
+    {
+      "type": "library",
+      "name": "libexpat",
+      "version": "2.5.0",
+      "purl": "pkg:generic/libexpat@2.5.0",
+      "bom-ref": "libexpat@2.5.0",
+      "supplier": {"name": "Expat Developers"},
+      "licenses": [{"license": {"id": "MIT"}}]
+    }
+  ],
+  "vulnerabilities": [
+    {
+      "id": "CVE-2024-0001",
+      "source": {"name": "NVD"},
+      "affects": [{"ref": "openssl@3.2.1"}],
+      "analysis": {
+        "state": "not_affected",
+        "justification": "vulnerable_code_not_in_execute_path"
+      },
+      "ratings": [
+        {"score": 7.5, "severity": "high", "method": "CVSSv4"}
+      ]
+    },
+    {
+      "id": "CVE-2024-0002",
+      "source": {"name": "NVD"},
+      "affects": [{"ref": "libexpat@2.5.0"}],
+      "analysis": {
+        "state": "exploitable"
+      },
+      "ratings": [
+        {"score": 9.1, "severity": "critical", "method": "CVSSv4"}
+      ]
+    }
+  ]
+}

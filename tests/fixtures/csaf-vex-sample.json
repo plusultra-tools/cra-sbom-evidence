@@ -1,0 +1,62 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "title": "my-product VEX bulletin 2026-06-18",
+    "publisher": {
+      "category": "vendor",
+      "name": "Example Corp",
+      "namespace": "https://example.com"
+    },
+    "tracking": {
+      "id": "EXAMPLE-2026-001",
+      "status": "final",
+      "version": "1.0.0",
+      "current_release_date": "2026-06-18T09:00:00Z",
+      "initial_release_date": "2026-06-18T09:00:00Z",
+      "revision_history": [
+        {
+          "number": "1.0.0",
+          "date": "2026-06-18T09:00:00Z",
+          "summary": "Initial release"
+        }
+      ]
+    }
+  },
+  "product_tree": {
+    "full_product_names": [
+      {
+        "product_id": "CSAF-PROD-1",
+        "name": "my-product 1.2.3"
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2024-0003",
+      "title": "Test vulnerability for CSAF",
+      "product_status": {
+        "fixed": ["CSAF-PROD-1"]
+      },
+      "remediations": [
+        {
+          "category": "vendor_fix",
+          "details": "Upgrade to my-product 1.2.4.",
+          "product_ids": ["CSAF-PROD-1"]
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2024-0004",
+      "title": "Second test vulnerability",
+      "product_status": {
+        "known_not_affected": ["CSAF-PROD-1"]
+      },
+      "flags": [
+        {
+          "label": "component_not_present",
+          "product_ids": ["CSAF-PROD-1"]
+        }
+      ]
+    }
+  ]
+}

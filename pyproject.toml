@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cra-sbom-evidence"
+version = "0.1.0"
+description = "CRA Article 14 evidence pack from your SBOM and VEX feeds, verbatim-cited and hash-chained."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "plusUltra" }]
+requires-python = ">=3.10"
+keywords = ["cra", "sbom", "vex", "cyclonedx", "spdx", "openvex", "csaf", "compliance", "eu-cyber-resilience-act"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Legal Industry",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = [
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+    "mypy>=1.0",
+    "build",
+]
+
+[project.urls]
+Homepage = "https://github.com/plusultra/cra-sbom-evidence"
+Repository = "https://github.com/plusultra/cra-sbom-evidence"
+
+[project.scripts]
+cra-sbom = "cra_sbom_evidence.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+cra_sbom_evidence = ["data/*.yaml", "data/*.json", "templates/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

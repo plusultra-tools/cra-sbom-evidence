@@ -1,0 +1,21 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://example.com/vex/2026-06-18-001",
+  "author": "plusUltra Security",
+  "timestamp": "2026-06-18T09:00:00Z",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": {"name": "CVE-2024-0001"},
+      "products": [{"@id": "pkg:generic/openssl@3.2.1"}],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path"
+    },
+    {
+      "vulnerability": {"name": "CVE-2024-0002"},
+      "products": [{"@id": "pkg:generic/libexpat@2.5.0"}],
+      "status": "affected",
+      "action_statement": "Apply vendor patch libexpat-2.6.0 or later."
+    }
+  ]
+}
