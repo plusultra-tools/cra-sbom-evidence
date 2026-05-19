@@ -166,18 +166,49 @@ def _cmd_verify(args: argparse.Namespace) -> int:
 
 
 def _cmd_verify_citations(_args: argparse.Namespace) -> int:
-    """Verify the SHA-256 integrity of all bundled CRA clause texts."""
+    """Verify each bundled CRA clause text against the canonical clauses.lock.
+
+    The lock file is the source-of-truth; the YAML is verified against it.
+    Drift in the YAML (transcription error, accidental edit) surfaces as a
+    non-zero exit code.
+    """
     results = verify_integrity()
-    all_ok = all(results.values())
-    for key, ok in sorted(results.items()):
-        status = "OK" if ok else "DRIFT"
-        print(f"  {status}: {key}")
+    all_ok = all(entry["status"] == "ok" for entry in results.values())
+    for key in sorted(results):
+        entry = results[key]
+        status = entry["status"]
+        if status == "ok":
+            label = "OK"
+        elif status == "drift":
+            label = "DRIFT"
+        elif status == "type_drift":
+            label = "TYPE-DRIFT"
+        elif status == "missing_in_lock":
+            label = "NEW-IN-YAML"
+        elif status == "missing_in_yaml":
+            label = "MISSING-IN-YAML"
+        else:
+            label = status.upper()
+        print(f"  {label}: {key}")
+        if status in ("drift", "type_drift"):
+            print(
+                f"      yaml_sha256={entry['yaml_sha256'][:16]}... "
+                f"lock_sha256={entry['lock_sha256'][:16]}..."
+            )
+            if status == "type_drift":
+                print(
+                    f"      yaml_excerpt_type={entry['yaml_excerpt_type']!r} "
+                    f"lock_excerpt_type={entry['lock_excerpt_type']!r}"
+                )
     if all_ok:
-        print(f"OK: all {len(results)} clause texts match their stored SHA-256 digests.")
+        print(f"OK: all {len(results)} clause texts match clauses.lock.")
         return 0
     else:
-        drifted = [k for k, ok in results.items() if not ok]
-        print(f"FAIL: {len(drifted)} clause(s) have drifted: {drifted}", file=sys.stderr)
+        drifted = [k for k, e in results.items() if e["status"] != "ok"]
+        print(
+            f"FAIL: {len(drifted)} clause(s) do not match clauses.lock: {drifted}",
+            file=sys.stderr,
+        )
         return 3
 
 

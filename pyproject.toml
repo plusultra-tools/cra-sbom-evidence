@@ -38,8 +38,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/plusultra/cra-sbom-evidence"
-Repository = "https://github.com/plusultra/cra-sbom-evidence"
+Homepage = "https://github.com/plusultra-tools/cra-sbom-evidence"
+Repository = "https://github.com/plusultra-tools/cra-sbom-evidence"
+Issues = "https://github.com/plusultra-tools/cra-sbom-evidence/issues"
+Changelog = "https://github.com/plusultra-tools/cra-sbom-evidence/blob/main/CHANGELOG.md"
 
 [project.scripts]
 cra-sbom = "cra_sbom_evidence.cli:main"
@@ -48,7 +50,7 @@ cra-sbom = "cra_sbom_evidence.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-cra_sbom_evidence = ["data/*.yaml", "data/*.json", "templates/*.md"]
+cra_sbom_evidence = ["data/*.yaml", "data/*.json", "data/*.lock", "templates/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

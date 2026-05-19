@@ -1,8 +1,13 @@
 """CRA clause registry loader.
 
 Loads the verbatim CRA clause data from ``data/cra_clauses.yaml`` and exposes
-it as typed objects. The ``sha256`` field on each clause is computed at load
-time from the ``text`` field; tests assert identity to detect drift.
+it as typed objects.
+
+The ``data/clauses.lock`` file is the canonical source-of-truth for the
+SHA-256 digest of each bundled clause text. ``verify_integrity()`` compares
+the YAML-derived hash against the locked hash (NOT against itself) so that
+a maintainer-side transcription error in the YAML is caught at runtime —
+which is what ``cra-sbom verify-citations`` reports.
 
 Source: Regulation (EU) 2024/2847 (Cyber Resilience Act), OJEU 2024-11-20.
 Canonical URL: https://eur-lex.europa.eu/eli/reg/2024/2847/oj
@@ -23,6 +28,11 @@ except ImportError as exc:
     raise ImportError("PyYAML is required: pip install pyyaml") from exc
 
 
+# Valid excerpt_type values. The lock file records the declared excerpt type
+# alongside the hash so verification can also detect classification drift.
+_VALID_EXCERPT_TYPES = frozenset({"verbatim", "verbatim_truncated", "summary"})
+
+
 class CraClause(BaseModel):
     """A single CRA clause with verbatim text and evidence metadata."""
 
@@ -31,7 +41,7 @@ class CraClause(BaseModel):
     text: str
     evidence_fields: list[str] = Field(default_factory=list)
     source_url: str = "https://eur-lex.europa.eu/eli/reg/2024/2847/oj"
-    excerpt_type: str = "verbatim"   # "verbatim" | "paraphrase" | "summary"
+    excerpt_type: str = "verbatim"   # "verbatim" | "verbatim_truncated" | "summary"
     sha256: str = ""
 
     @model_validator(mode="after")
@@ -39,6 +49,11 @@ class CraClause(BaseModel):
         """Compute SHA-256 of the text field if not already set."""
         if not self.sha256:
             self.sha256 = hashlib.sha256(self.text.encode("utf-8")).hexdigest()
+        if self.excerpt_type not in _VALID_EXCERPT_TYPES:
+            raise ValueError(
+                f"Invalid excerpt_type {self.excerpt_type!r} for clause {self.key!r}. "
+                f"Valid values: {sorted(_VALID_EXCERPT_TYPES)}"
+            )
         return self
 
 
@@ -73,6 +88,41 @@ def _load_yaml_data() -> dict[str, Any]:
     raise FileNotFoundError("cra_clauses.yaml not found in package data or adjacent directory")
 
 
+def _load_lock_data() -> dict[str, tuple[str, str]]:
+    """Load the canonical lock file. Returns mapping key -> (sha256, excerpt_type).
+
+    Falls back to an empty dict if the lock file is missing — in that case
+    ``verify_integrity()`` returns a ``"missing_lock"`` marker for every key.
+    """
+    # Try installed-package location first
+    try:
+        ref = resources.files("cra_sbom_evidence.data").joinpath("clauses.lock")
+        with resources.as_file(ref) as lock_path:
+            return _parse_lock_file(lock_path)
+    except (AttributeError, TypeError, FileNotFoundError):
+        pass
+    fallback = Path(__file__).parent / "data" / "clauses.lock"
+    if fallback.exists():
+        return _parse_lock_file(fallback)
+    return {}
+
+
+def _parse_lock_file(lock_path: Path) -> dict[str, tuple[str, str]]:
+    """Parse the line-oriented lock file."""
+    result: dict[str, tuple[str, str]] = {}
+    with lock_path.open(encoding="utf-8") as fh:
+        for raw in fh:
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split()
+            if len(parts) < 3:
+                continue
+            sha, key, excerpt_type = parts[0], parts[1], parts[2]
+            result[key] = (sha, excerpt_type)
+    return result
+
+
 @lru_cache(maxsize=1)
 def load_registry() -> CraRegistry:
     """Load and parse the CRA clause registry (cached after first call).
@@ -91,6 +141,16 @@ def load_registry() -> CraRegistry:
 
     # Build registry with remaining top-level fields
     registry_data = {**data, "clauses": clauses}
+    # Drop unknown top-level keys (e.g., date_of_entry_into_force) — model is strict
+    known = {
+        "source_canonical_url",
+        "regulation_id",
+        "short_title",
+        "date_article_14_applies",
+        "date_full_application",
+        "clauses",
+    }
+    registry_data = {k: v for k, v in registry_data.items() if k in known}
     return CraRegistry.model_validate(registry_data)
 
 
@@ -113,15 +173,57 @@ def get_clause(key: str) -> CraClause:
     return registry.clauses[key]
 
 
-def verify_integrity() -> dict[str, bool]:
-    """Recompute SHA-256 of each clause text and compare to the stored digest.
+def verify_integrity() -> dict[str, dict[str, str]]:
+    """Recompute SHA-256 of each clause text and compare against the lock file.
 
     Returns:
-        Mapping of clause key → True (pass) / False (drift detected).
+        Mapping of clause key -> dict with keys:
+            - ``status``: "ok" | "drift" | "missing_in_lock" | "missing_in_yaml" | "type_drift"
+            - ``yaml_sha256``: computed digest from YAML text (or empty if missing)
+            - ``lock_sha256``: digest from clauses.lock (or empty if missing)
+            - ``yaml_excerpt_type``: excerpt_type from YAML
+            - ``lock_excerpt_type``: excerpt_type from lock
     """
     registry = load_registry()
-    results: dict[str, bool] = {}
-    for key, clause in registry.clauses.items():
+    lock_data = _load_lock_data()
+    results: dict[str, dict[str, str]] = {}
+
+    yaml_keys = set(registry.clauses.keys())
+    lock_keys = set(lock_data.keys())
+
+    for key in sorted(yaml_keys | lock_keys):
+        if key not in yaml_keys:
+            results[key] = {
+                "status": "missing_in_yaml",
+                "yaml_sha256": "",
+                "lock_sha256": lock_data[key][0],
+                "yaml_excerpt_type": "",
+                "lock_excerpt_type": lock_data[key][1],
+            }
+            continue
+        clause = registry.clauses[key]
         computed = hashlib.sha256(clause.text.encode("utf-8")).hexdigest()
-        results[key] = computed == clause.sha256
+        if key not in lock_keys:
+            results[key] = {
+                "status": "missing_in_lock",
+                "yaml_sha256": computed,
+                "lock_sha256": "",
+                "yaml_excerpt_type": clause.excerpt_type,
+                "lock_excerpt_type": "",
+            }
+            continue
+        lock_sha, lock_type = lock_data[key]
+        if computed != lock_sha:
+            status = "drift"
+        elif clause.excerpt_type != lock_type:
+            status = "type_drift"
+        else:
+            status = "ok"
+        results[key] = {
+            "status": status,
+            "yaml_sha256": computed,
+            "lock_sha256": lock_sha,
+            "yaml_excerpt_type": clause.excerpt_type,
+            "lock_excerpt_type": lock_type,
+        }
     return results
